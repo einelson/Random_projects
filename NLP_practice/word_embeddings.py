@@ -1,5 +1,6 @@
 from matplotlib.cbook import flatten
 import numpy as np
+import io
 from sklearn import metrics
 from tensorflow.keras.layers import Dense, Embedding, Flatten
 from tensorflow.keras.preprocessing.text import Tokenizer
@@ -76,3 +77,20 @@ li = model.layers[0]
 weights = li.get_weights()[0]
 print(weights.shape) # shape: (vocab_size, embedding_dim)
 print(weights)
+
+
+# download weights
+
+# set up streams
+vectors = io.open('vectors.tsv', 'w', encoding='utf-8')
+meta = io.open('meta.tsv', 'w', encoding='utf-8')
+
+reverse_word_index = dict([(value, key) for (key, value) in word_index.items()])
+
+for index in range(1,vocab_size):
+    word = reverse_word_index[index]
+    embeddings = weights[index]
+    meta.write(word + '\n')
+    vectors.write('\t'.join([str(x) for x in embeddings]) + '\n')
+
+# https://projector.tensorflow.org/
